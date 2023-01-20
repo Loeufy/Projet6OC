@@ -9,7 +9,7 @@ const userSchema = mongoose.Schema({
   // mot de passe
   password: { type: String, required: true },
 });
-// utilisation du shema via le plugin de mongoose-unique-validator
+// utilisation du shema via le plugin de mongoose
 userSchema.plugin(uniqueValidator);
 // exportation du shema modele
 module.exports = mongoose.model("User", userSchema);

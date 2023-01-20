@@ -1,6 +1,6 @@
 // on importe multer
 const multer = require("multer");
-// on définit les images/formats reçu en appartenance de format ( comme un dictionnaire)
+// on définit les images/formats reçu en appartenance
 const MIME_TYPES = {
   "image/jpg": "jpg",
   "image/jpeg": "jpg",
@@ -13,20 +13,20 @@ const MIME_TYPES = {
   "image/tif": "tif",
   "image/webp": "webp",
 };
-// multer.diskStorage on va enregistrer sur le disque
+// enregistrer sur le disque
 const storage = multer.diskStorage({
   // on choisit la destination
   destination: (req, file, callback) => {
-    // null dit qu'il n'y a pas eu d'erreur à ce niveau la et 'images' c'est le nom du dossier
+    // pas eu d'erreur à ce niveau la
     callback(null, "images");
   },
-  // on definit les termes de son appel (nom)
+  // on definit les termes
   filename: (req, file, callback) => {
-    // nom d'origine du fichier que l'ont transforme si il y a des espaces, on crée un tableau et on join ses éléments par _
+    // nom d'origine du fichier
     const name = file.originalname.split(" ").join("_");
-    // permet de créer une extension de fichiers correspondant au mimetype (via dictionnaire) envoyé par le frontend
+    // permet de créer une extension de fichiers
     const extension = MIME_TYPES[file.mimetype];
-    // si le fichier correspond à un fichier image https://developer.mozilla.org/fr/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+    // si le fichier correspond à un fichier
     if (
       file.mimetype === "image/jpeg" ||
       file.mimetype === "image/png" ||
@@ -39,15 +39,12 @@ const storage = multer.diskStorage({
       file.mimetype === "image/tif" ||
       file.mimetype === "image/webp"
     ) {
-      // aura son nom associé à une date (pour le rendre le plus unique possible) et un point et son extension
+      // aura son nom associé à une date
       callback(null, name + Date.now() + "." + extension);
       // si ce n'est pas un fichier image
     } else {
       console.log("fichier non accepté");
-      // déplace des fichiers non image et on garde des fichiers non conformes pour informations diverses
-      // la proposition d'un fichier image est automatique, si une personne choisit volontairement de mettre autre chose, il est fort possible que ce soit malveillant
-      // dans le fichier isolé il y a l'id de celui qui est supposé avoir posté le fichier, à voir si une faille usurpation token + id (keylogger ou autre)
-      // ou volonté du détenteur du compte
+      // déplace des fichiers non image
       callback(
         null,
         "isole/" + req.auth.userId + "_" + name + Date.now() + "." + extension
@@ -55,6 +52,5 @@ const storage = multer.diskStorage({
     }
   },
 });
-// on exporte le fichier via multer qui possede l'objet storage puis .single signifie fichier unique (pas un groupe de fichiers) en disant que c'est un fichier 'image'
-// ce nom de fichier sera la key dans form-data de postman (insert File)
+// on exporte le fichier via multer
 module.exports = multer({ storage }).single("image");
